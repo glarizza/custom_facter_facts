@@ -2,22 +2,37 @@
 #
 #  This fact will read the output from `pmset -g custom` which will
 #  list all pmset values for the system. It specifically strips out
-#  All title lines (i.e. lines that begin with 'Battery' or 'AC'), but
-#  that logic is hardcoded and frail, so if this fails on newer versions
-#  of OS X, you might want to start there.
+#  All title lines (i.e. lines that begin with 'Battery' or 'AC') and
+#  creates facts for both the Battery and AC sections. This is terribly
+#  hardcoded due to the split I had to do - so patches are absolutely
+#  welcome.
 
-IO.popen('/usr/bin/pmset -g custom').readlines.each do |line|
-  # Prepare each line into an array of two values
-  item_array = line.strip.chomp.split
+# Read in pmset values and split into two separate arrays
+# based on the nasty hardcoded element 16
+pmset_array = IO.popen('/usr/bin/pmset -g custom').readlines
+battery_array, ac_array = pmset_array.each_slice(16).to_a
 
-  # Strip out the title lines here
-  # NOTE: This is hardcoded and might need updated with newer versions of OS X
-  next if item_array.member?('Battery') or item_array.member?('AC')
+# Remove Headers
+battery_array.shift
+ac_array.shift
 
-  # Create the individual facts based on the array of key/value pairs
-  Facter.add("pmset_#{item_array[0]}") do
+# Battery Facts
+battery_array.each do |element|
+  key = element.strip.split
+  Facter.add("pmset_battery_#{key[0]}") do
     setcode do
-      item_array[1]
+      key[1]
     end
   end
 end
+
+# AC Facts
+ac_array.each do |element|
+  key = element.strip.split
+  Facter.add("pmset_ac_#{key[0]}") do
+    setcode do
+      key[1]
+    end
+  end
+end
+
