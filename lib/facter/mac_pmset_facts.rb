@@ -9,30 +9,31 @@
 
 # Read in pmset values and split into two separate arrays
 # based on the nasty hardcoded element 16
-pmset_array = IO.popen('/usr/bin/pmset -g custom').readlines
-battery_array, ac_array = pmset_array.each_slice(16).to_a
+if Facter.value(:osfamily) == 'Darwin'
+  pmset_array = IO.popen('/usr/bin/pmset -g custom').readlines
+  battery_array, ac_array = pmset_array.each_slice(16).to_a
 
-# Remove Headers
-battery_array.shift
-ac_array.shift
+  # Remove Headers
+  battery_array.shift
+  ac_array.shift
 
-# Battery Facts
-battery_array.each do |element|
-  key = element.strip.split
-  Facter.add("pmset_battery_#{key[0]}") do
-    setcode do
-      key[1]
+  # Battery Facts
+  battery_array.each do |element|
+    key = element.strip.split
+    Facter.add("pmset_battery_#{key[0]}") do
+      setcode do
+        key[1]
+      end
+    end
+  end
+
+  # AC Facts
+  ac_array.each do |element|
+    key = element.strip.split
+    Facter.add("pmset_ac_#{key[0]}") do
+      setcode do
+        key[1]
+      end
     end
   end
 end
-
-# AC Facts
-ac_array.each do |element|
-  key = element.strip.split
-  Facter.add("pmset_ac_#{key[0]}") do
-    setcode do
-      key[1]
-    end
-  end
-end
-
