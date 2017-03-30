@@ -16,6 +16,9 @@
 # ':' - so if you wanted to call the fact 'yum_version_boolean' you would change it to
 # say :yum_version_boolean)
 #
+# Thanks to https://github.com/whatsaranjit and https://github.com/natemccurdy
+# for their help!
+#
 require 'puppet/type/package'
 
 Facter.add(:bash_version_boolean) do
