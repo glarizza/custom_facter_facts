@@ -10,6 +10,8 @@
 # "package" variable below from 'bash' to the package name as known by the
 # default package provider.
 #
+require 'puppet/type/package'
+
 Facter.add(:centrify) do
   setcode do
     package  = 'bash'
