@@ -10,9 +10,15 @@
 # "package" variable below from 'bash' to the package name as known by the
 # default package provider.
 #
+# Right now the actual fact name is 'bash_version' because the example uses the
+# 'bash' package. To change the fact name you'll need to change
+# :bash_version to whatever your fact name should be (starting with a colon
+# ':' - so if you wanted to call the fact 'yum_version' you would change it to
+# say :yum_version)
+#
 require 'puppet/type/package'
 
-Facter.add(:centrify) do
+Facter.add(:bash_version) do
   setcode do
     package  = 'bash'
     instance = Puppet::Type.type('package').instances.select { |pkg| pkg.name == package }.first
